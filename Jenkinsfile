@@ -5,6 +5,7 @@ pipeline {
 
         stage('Build Backend Docker') {
             steps {
+                sh 'cd backend && mvn clean package -DskipTests'
                 sh 'docker build -t devops-backend:1.0 ./backend'
             }
         }
