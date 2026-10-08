@@ -5,6 +5,11 @@ services:
     environment:
       MYSQL_DATABASE: test_db
       MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -18,7 +23,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - devops-network
 
