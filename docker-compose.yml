@@ -1,0 +1,39 @@
+services:
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: test_db
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - devops-network
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db
+    networks:
+      - devops-network
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8082:80"
+    networks:
+      - devops-network
+
+networks:
+  devops-network:
+
+volumes:
+  mysql_data:

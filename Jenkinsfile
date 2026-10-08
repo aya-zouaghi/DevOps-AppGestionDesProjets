@@ -1,31 +1,25 @@
 pipeline {
-  agent any
-  stages {
-    stage('build') {
-      steps {
-        sh '''echo "=========================================="
-echo "Bonjour depuis Jenkins Blue Ocean !"
-echo "Date système : $(date)"
-echo "Numéro de build : $BUILD_NUMBER"
-echo "Nom du job : $JOB_NAME"
-echo "Workspace : $WORKSPACE"
-echo "=========================================="'''
-      }
-    }
+    agent any
 
-    stage('Test') {
-      steps {
-        sh '''echo "Exécution des tests..."
-echo "Tests terminés avec succès !"'''
-      }
-    }
+    stages {
 
-    stage('Deploy') {
-      steps {
-        sh '''echo "Déploiement en cours..."
-echo "Application déployée avec succès !"'''
-      }
-    }
+        stage('Build Backend Docker') {
+            steps {
+                sh 'docker build -t devops-backend:1.0 ./backend'
+            }
+        }
 
-  }
+        stage('Build Frontend Docker') {
+            steps {
+                sh 'docker build -t devops-frontend:1.0 ./frontend'
+            }
+        }
+
+        stage('Docker Compose') {
+            steps {
+                sh 'docker compose up -d'
+            }
+        }
+
+    }
 }
