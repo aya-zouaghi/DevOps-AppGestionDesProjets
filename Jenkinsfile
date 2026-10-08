@@ -25,7 +25,9 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'cd backend && mvn sonar:sonar'
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh 'cd backend && mvn sonar:sonar'
+                    }
                 }
             }
         }
