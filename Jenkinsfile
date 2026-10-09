@@ -58,6 +58,25 @@ pipeline {
             }
         }
 
+        stage('Push Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        docker tag devops-backend:1.0 "$DOCKERHUB_USER/devops-backend:1.0"
+                        docker tag devops-frontend:1.0 "$DOCKERHUB_USER/devops-frontend:1.0"
+                        docker push "$DOCKERHUB_USER/devops-backend:1.0"
+                        docker push "$DOCKERHUB_USER/devops-frontend:1.0"
+                        docker logout
+                    '''
+                }
+            }
+        }
+
         stage('Docker Compose') {
             steps {
                 sh 'docker compose up -d'
